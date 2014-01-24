@@ -1,0 +1,35 @@
+<% content_for :head do %>
+  <meta property="og:type" content="movie" />
+  <meta property="og:video:width" content="1280" />
+  <meta property="og:video:height" content="720" />
+  <meta property="og:video:type" content="application/x-shockwave-flash" />
+  <meta property="og:title" content="<%= @title %>" />
+  <meta property="og:description" content="<%= @description %>" />
+  <meta property="og:image" content="<%= root_url %>acao.jpg" />
+  <meta property="og:video" content="<%= root_url %>jwplayer/player.swf?file=<%= CGI.escape @file_url %>&autostart=true" />
+<% end %>
+<script type="text/javascript" src="/jwplayer/jwplayer.js"></script>
+<script type="text/javascript">jwplayer.key="opiBO5hOcQSy8c43EjuWaaSwUxwYFKKu4B6NomhCsmI=";</script>
+<div id="player">Loading the player...</div>
+<script type="text/javascript">
+    jwplayer("player").setup({
+      width: '1280',
+      height: '720',
+      autostart: true,
+      sharing: {
+        code: encodeURI("<iframe src='http://streamer.acao.it/embed/MEDIAID' />"),
+        link: "http://streamer.acao.it/video/MEDIAID"
+      },
+      image: '/acao.jpg',
+      title: '<%= escape_javascript @title %>',
+      description: '<%= escape_javascript @description %>',
+      mediaid: '<%= escape_javascript @mediaid %>',
+      sources: <%=raw @sources.to_json %>,
+    }).addButton(
+    "/download_button.png",
+    "Download Video",
+    function() {
+      window.location.href = jwplayer().getPlaylistItem().sources[jwplayer().getCurrentQuality()].file;
+    },
+    "download");
+</script>
