@@ -8,7 +8,14 @@ gem 'pg'
 gem 'sqlite3'
 
 gem 'tiny_tds'
-gem 'activerecord-sqlserver-adapter', :git => 'https://github.com/nextgearcapital/activerecord-sqlserver-adapter.git', :branch => 'rails-4', :ref => '15385ca9b5108f024862413574a3a3fd7a7d56fa'
+gem 'activerecord-sqlserver-adapter', :git => 'https://github.com/rails-sqlserver/activerecord-sqlserver-adapter.git'
+#gem 'activerecord-sqlserver-adapter', :git => 'https://github.com/nextgearcapital/activerecord-sqlserver-adapter.git', :branch => 'rails-4'
+#gem 'activerecord-sqlserver-adapter', :git => 'https://github.com/nextgearcapital/activerecord-sqlserver-adapter.git', :branch => 'rails-4', :ref => '15385ca9b5108f024862413574a3a3fd7a7d56fa'
+
+gem 'rails-observers'
+gem 'squeel'
+
+gem 'curb'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
@@ -50,9 +57,14 @@ end
 
 gem 'puma'
 
+gem 'geocoder'
+gem 'state_machine'
+
 gem 'exception_notification', '>= 4.0.1'
 
 gem 'pry-rails'
+
+gem 'vihai-password', '>= 1.2.0'
 
 gem 'active_rest', '~> 6.5.0'#, :path => '../submodules/active_rest'
 
@@ -61,5 +73,12 @@ gem 'hel', :path => '../yggdra/plugins/hel'
 
 gem 'extgui', :path => '../yggdra/plugins/extgui'
 gem 'extjs', :path => '../yggdra/plugins/extjs'
+
+gem 'core_models', :path => '../yggdra/plugins/core_models'
+gem 'core_hel', :path => '../yggdra/plugins/core_hel'
+gem 'core_extgui', :path => '../yggdra/plugins/core_extgui'
+
+#gem 'shop_extgui', :path => '../yggdra/plugins/shop_extgui'
+
 
 #gem 'rgeo'

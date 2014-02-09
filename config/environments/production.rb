@@ -27,7 +27,7 @@ Acao::Application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  config.assets.compile = true
 
   # Generate digests for assets URLs.
   config.assets.digest = true
@@ -83,12 +83,12 @@ Acao::Application.configure do
     /\/Plugin.js$/,
     'extgui.css',
     'ext/ext.js',
-    'asgard-stage1.js',
-    'asgard-stage2.js',
+    'acao-stage1.js',
+    'acao-stage2.js',
     'ext/resources/css/ext-all-neptune.css',
   ]
 
-  config.extgui.hel_host = '[::1]:81'
+  #config.extgui.hel_host = '[::1]:81'
   config.extgui.faye_source_uri = lambda { "https://#{request.host}/faye.js" }
   config.extgui.faye_interface_uri = lambda { "https://#{request.host}/faye" }
 end

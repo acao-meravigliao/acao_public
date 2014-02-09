@@ -23,11 +23,13 @@ module Acao
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'js')
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'css')
 
-    config.extgui.page_title = 'ACAO'
-    config.extgui.main_js = 'extgui-stage1'
-    config.extgui.stage2_js = 'extgui-stage2'
-    config.extgui.main_app_prefix = 'Asgard'
-    config.extgui.routes = { 'Asgard' => '/assets/asgard' }
+    config.extgui.page_title = 'ACAO Area Servizi'
+    config.extgui.main_js = 'acao-stage1'
+    config.extgui.stage2_js = 'acao-stage2'
+    config.extgui.main_app_prefix = 'Acao'
+    config.extgui.routes = { 'Acao' => '/assets/acao' }
     config.extgui.ext_asset = 'ext/ext'
+    config.extgui.main_css = 'services'
+    config.extgui.favicon = 'acao/favicon.png'
   end
 end

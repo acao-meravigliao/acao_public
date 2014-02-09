@@ -28,7 +28,7 @@ Acao::Application.configure do
   config.assets.debug = true
 
   config.extgui.ext_asset = 'ext/ext-dev'
-  config.extgui.hel_host = '127.0.0.1:3000'
+  #config.extgui.hel_host = '127.0.0.1:3000'
   config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye.js" }
   config.extgui.faye_interface_uri = lambda { "#{request.protocol}#{request.host}:8000/faye" }
 end

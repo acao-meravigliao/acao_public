@@ -9,7 +9,20 @@ Acao::Application.routes.draw do
 
   get 'radar' => 'radar#main'
 
-  get 'services' => 'services/main#index'
+  get 'services' => 'extgui/main#index'
 
   root :to => 'main#player'
+
+  namespace :ygg do
+    namespace :acao do
+      hel_resources :flights do
+      end
+
+      hel_resources :planes do
+        collection do
+          get 'by_code/:id(.:format)' => :by_code
+        end
+      end
+    end
+  end
 end

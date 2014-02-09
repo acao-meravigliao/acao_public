@@ -4,13 +4,13 @@
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem 'sqlite3'
 
-#development:
-#  adapter: sqlserver
-#  mode: dblib
-#  dataserver: acao_sql_server
-#  database: 
-#  username: orlandi
-#  password: orlandi
+acao_sqlserver:
+  adapter: sqlserver
+  mode: dblib
+  dataserver: acao_sql_server
+  database: 
+  username: orlandi
+  password: orlandi
 
 development:
   adapter: postgresql
@@ -20,12 +20,11 @@ development:
   password:
 
 production:
-  adapter: sqlserver
-  mode: dblib
-  dataserver: acao_sql_server
-  database: 
-  username: orlandi
-  password: orlandi
+  adapter: postgresql
+  encoding: unicode
+  database: acao
+  username:
+  password:
 
 test:
   adapter: sqlite3
