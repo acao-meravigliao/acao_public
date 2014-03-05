@@ -52,6 +52,7 @@ class MainController < ApplicationController
   def live
     if request.env['HTTP_USER_AGENT'] =~ /Android/
       redirect_to '/cam.m3u8'
+      return
     end
 
     response.headers['X-Frame-Options'] = 'GOFORIT'

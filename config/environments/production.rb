@@ -22,18 +22,11 @@ Acao::Application.configure do
   # Disable Rails's static asset server (Apache or nginx will already do this).
   config.serve_static_assets = false
 
-  # Compress JavaScripts and CSS.
-  config.assets.js_compressor = :uglifier
-  # config.assets.css_compressor = :sass
-
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Generate digests for assets URLs.
   config.assets.digest = true
-
-  # Version of your assets, change this if you want to expire all your assets.
-  config.assets.version = '1.0'
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for apache
@@ -78,17 +71,10 @@ Acao::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  config.assets.precompile += [
-    /\w+\.(?!js|css)$/,
-    /\/Plugin.js$/,
-    'extgui.css',
-    'ext/ext.js',
-    'acao-stage1.js',
-    'acao-stage2.js',
-    'ext/resources/css/ext-all-neptune.css',
-  ]
-
-  #config.extgui.hel_host = '[::1]:81'
-  config.extgui.faye_source_uri = lambda { "https://#{request.host}/faye.js" }
-  config.extgui.faye_interface_uri = lambda { "https://#{request.host}/faye" }
+  config.extgui.hel_host = '[::1]:81'
+  config.extgui.compiled = true
+  config.extgui.compiled_stage1 = 'acao_services-stage1.js'
+  config.extgui.compiled_stage2 = 'acao_services-stage2.js'
+  config.extgui.faye_source_uri = '/faye/faye.js'
+  config.extgui.faye_interface_uri = '/faye'
 end

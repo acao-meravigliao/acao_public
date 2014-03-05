@@ -20,16 +20,17 @@ module Acao
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
+    # Version of your assets, change this if you want to expire all your assets.
+    config.assets.version = '1.0'
+
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'js')
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'css')
 
     config.extgui.page_title = 'ACAO Area Servizi'
-    config.extgui.main_js = 'acao-stage1'
-    config.extgui.stage2_js = 'acao-stage2'
-    config.extgui.main_app_prefix = 'Acao'
-    config.extgui.routes = { 'Acao' => '/assets/acao' }
-    config.extgui.ext_asset = 'ext/ext'
-    config.extgui.main_css = 'services'
-    config.extgui.favicon = 'acao/favicon.png'
+    config.extgui.application = 'AcaoServices.Application'
+    config.extgui.routes.merge!({ 'AcaoServices' => 'AcaoServices' })
+    config.extgui.default_theme = :neptune
+    config.extgui.main_css = 'acao_services.css'
+    config.extgui.favicon = 'acao_services/favicon.png'
   end
 end

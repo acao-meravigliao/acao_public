@@ -12,6 +12,13 @@ acao_sqlserver:
   username: orlandi
   password: orlandi
 
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: acao
+  username:
+  password:
+
 development:
   adapter: postgresql
   encoding: unicode
@@ -19,7 +26,7 @@ development:
   username:
   password:
 
-production:
+assets:
   adapter: postgresql
   encoding: unicode
   database: acao

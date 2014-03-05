@@ -23,6 +23,31 @@ class Flight < Ygg::PublicModel
   belongs_to :towplane_pilot2,
              :class_name => 'Ygg::Core::Person'
 
+  has_acl
+
+  def owners
+    [ plane_pilot1, plane_pilot2, towplane_pilot1, towplane_pilot2 ]
+  end
+
+  def self.belonging_to(entity)
+    case entity
+    when Ygg::Core::Identity
+    when Ygg::Core::Person
+      joins { plane_pilot1.outer }.
+      joins { plane_pilot2.outer }.
+      joins { towplane_pilot1.outer }.
+      joins { towplane_pilot2.outer }.where{
+        (
+          plane_pilot1.id.eq(entity.id) |
+          plane_pilot2.id.eq(entity.id) |
+          towplane_pilot1.id.eq(entity.id) |
+          towplane_pilot2.id.eq(entity.id)
+        )
+      }
+    when Ygg::Core::Organization
+    end
+  end
+
   def self.sync_frequent!
     sync!(:limit => 200)
   end

@@ -7,17 +7,14 @@
  *
  */
 
-Ext.define('Acao.MainController', {
+Ext.define('AcaoServices.MainController', {
   extend: 'Extgui.MainControllerBase',
   requires: [
-    'Acao.Viewport',
-    'Acao.LoginDialog'
+    'AcaoServices.Viewport',
+    'AcaoServices.LoginDialog'
   ],
-  stores: [ ],
-  views: [
-    'Acao.Viewport',
-    'Acao.LoginDialog'
-  ],
+  viewport: 'AcaoServices.Viewport',
+
   refs: [
     { ref: 'mainpanel', selector: 'viewport container[name=mainpanel]' },
   ],
@@ -32,8 +29,6 @@ Ext.define('Acao.MainController', {
       'viewport > toolbar[region=north] textfield[name=search]': { specialkey: me.onSearchSpecialKey },
       'viewport > toolbar[region=west] button': { click: me.onMenuButton },
     });
-
-    me.getView('Acao.Viewport').create();
 
     me.openUri('ygg/acao/flights/');
   },
@@ -65,7 +60,6 @@ Ext.define('Acao.MainController', {
   openUriWithConfig: function(uri, contentConfig) {
     var me = this;
 
-console.log("OOOOOOOO", uri, contentConfig);
     contentConfig = contentConfig || {};
 
     var card = new Extgui.Card({

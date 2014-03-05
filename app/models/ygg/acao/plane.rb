@@ -16,6 +16,7 @@ class Plane < Ygg::PublicModel
      :race_registration => entry[:race_reg].strip.upcase,
      :registration => entry[:reg].strip.upcase,
      :common_radio_frequency => entry[:freq].strip,
+     :flarm_code => entry[:id].strip.upcase,
     }
   end
 
@@ -49,9 +50,9 @@ class Plane < Ygg::PublicModel
 
         puts "NEW flarmnet entry #{fcur} #{flarmnet_entry[:reg]}"
 
-        plane = Ygg::Acao::Plane.find_by_registration(flarmnet_entry[:reg].strip.upcase)
+        plane = Ygg::Acao::Plane.where(:flarm_code => nil).find_by_registration(flarmnet_entry[:reg].strip.upcase)
         if !plane
-          Ygg::Acao::Plane.create(attributes_from_flarmnet(flarmnet_entry).merge(:flarm_code => fcur))
+          Ygg::Acao::Plane.create(attributes_from_flarmnet(flarmnet_entry))
         else
           plane.update_attributes(attributes_from_flarmnet(flarmnet_entry))
         end

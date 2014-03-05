@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1200, initial-scale=0.5, minimum-scale=0.5, maximum-scale=1.5, user-scalable=yes">
-    <%= favicon_link_tag 'favicon.png' %>
+    <%= favicon_link_tag Rails.application.config.extgui.favicon %>
     <style type="text/css">
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
@@ -35,8 +35,8 @@
       <tr>
         <td style="width: 75%; height: 100%;"><div id="map-canvas"></div></td>
         <td><div id="cam">
-<script type="text/javascript" src="/jwplayer/jwplayer.js"></script>
-<script type="text/javascript">jwplayer.key="opiBO5hOcQSy8c43EjuWaaSwUxwYFKKu4B6NomhCsmI=";</script>
+    <script type="text/javascript" src="/jwplayer/jwplayer.js"></script>
+    <script type="text/javascript">jwplayer.key="opiBO5hOcQSy8c43EjuWaaSwUxwYFKKu4B6NomhCsmI=";</script>
 
 <div id="player">Loading the player...</div>
 <script type="text/javascript">
@@ -53,18 +53,16 @@
       </tr>
     </table>
 
+    <%= javascript_include_tag @faye_source_uri if @faye_source_uri %>
+
     <script type="text/javascript">
       var app = {
         faye_interface_uri: '<%= @faye_interface_uri %>',
       };
     </script>
 
-    <% if @faye_source_uri %>
-    <script type="text/javascript" src="<%= @faye_source_uri %>"></script>
-    <% end %>
-
     <script type="text/javascript" src="<%= request.protocol %>maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <%= javascript_include_tag 'radar' %>
+    <%= javascript_include_tag 'radar.js' %>
 
   </body>
 </html>

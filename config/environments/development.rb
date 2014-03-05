@@ -19,16 +19,16 @@ Acao::Application.configure do
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
-  # Raise an error on page load if there are pending migrations
-  config.active_record.migration_error = :page_load
-
   # Debug mode disables concatenation and preprocessing of assets.
-  # This option may cause significant delays in view rendering with a large
-  # number of complex assets.
   config.assets.debug = true
 
-  config.extgui.ext_asset = 'ext/ext-dev'
-  #config.extgui.hel_host = '127.0.0.1:3000'
-  config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye.js" }
+  config.assets.raise_production_errors = true
+
+  # Avoid having precompiled assets being served
+  config.assets.prefix = '/assets-dev'
+
+  config.extgui.ext_core_js = 'ext/ext-dev.js'
+  config.extgui.hel_host = '127.0.0.1:3100'
+  config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye/faye.js" }
   config.extgui.faye_interface_uri = lambda { "#{request.protocol}#{request.host}:8000/faye" }
 end
