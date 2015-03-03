@@ -10,7 +10,7 @@
  */
 
 Ext.define('Extgui.Acao.Flight.Form', {
-  extend: 'Extgui.form.ModelFormPanel',
+  extend: 'Extgui.form.ModelPanel',
   requires: [
     'Extgui.Acao.Plugin',
     'Extgui.form.field.DecimalNumber',

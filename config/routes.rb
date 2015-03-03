@@ -7,11 +7,19 @@ Acao::Application.routes.draw do
   get 'video/:mediaid' => 'main#video'
   get 'embed/:mediaid' => 'main#embed'
 
+  get 'cam/:name' => 'cam#live'
+  get 'cam/:name/live' => 'cam#live'
+  get 'cam/:name/livelapse' => 'cam#livelapse'
+  get 'cam/:name/player' => 'cam#player'
+
   get 'radar' => 'radar#main'
+  get 'radar/embed' => 'radar#embed'
+
+  get 'wind' => 'wind#main'
 
   get 'services' => 'extgui/main#index'
 
-  root :to => 'main#player'
+  root :to => redirect('https://acao.it')
 
   namespace :ygg do
     namespace :acao do

@@ -15,7 +15,7 @@ Ext.define('AcaoServices.LoginDialog', {
     'Ext.form.Panel',
     'Extgui.AjaxJson',
   ],
-  alias: 'widget.logindialog',
+  id: 'logindialog',
   title: 'Login...',
   width: 400,
   height: 180,

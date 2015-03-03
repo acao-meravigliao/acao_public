@@ -1,0 +1,18 @@
+[Unit]
+Description=Live camera Segmenter Daemon
+Wants=
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+StartLimitInterval=0
+RestartSec=90s
+
+User=vihai
+Group=vihai
+
+ExecStart=/usr/local/bin/livehls
+
+[Install]
+WantedBy=multi-user.target

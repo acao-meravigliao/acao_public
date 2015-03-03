@@ -8,6 +8,18 @@ module Acao
 class Plane < Ygg::PublicModel
   self.table_name = :planes
 
+  interface :rest do
+    capability :simple_interface do
+      allow :show
+      default_readable!
+    end
+
+    capability :full_interface do
+      allow :show
+      default_readable!
+    end
+  end
+
   def self.attributes_from_flarmnet(entry)
     {
      :owner_name => entry[:name].strip,

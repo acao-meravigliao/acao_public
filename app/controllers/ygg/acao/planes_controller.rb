@@ -8,7 +8,7 @@ class PlanesController < Ygg::Hel::RestController
   skip_before_action :ensure_authenticated_and_authorized!, :only => [ :by_code ]
 
   def by_code
-    @aaa_context = ActiveRest::Model::Interface::FakeAAAContext.new
+    @aaa_context = Ygg::Core::SuperuserContext.new
 
     @resource_relation ||= ar_model
     @resource_relation = ar_model.includes(ar_model.interfaces[:rest].eager_loading_hints(:view => ar_view)) if ar_model

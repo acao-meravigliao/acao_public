@@ -5,10 +5,16 @@ namespace :acao do
     Ygg::Acao::Flight.sync_frequent!
   end
 
-  task(:sync => :environment) do
-    Ygg::Acao::Plane.import_flarmnet_db!
-    Ygg::Acao::Flight.sync!
 
+  task(:'sync:flarmnet' => :environment) do
+    Ygg::Acao::Plane.import_flarmnet_db!
+  end
+
+  task(:'sync:flights' => :environment) do
+    Ygg::Acao::Flight.sync!
+  end
+
+  task(:'sync:pilots' => :environment) do
     r_records = nil
     l_records = nil
 
@@ -17,8 +23,9 @@ namespace :acao do
     updated_records = []
 
     ActiveRecord::Base.transaction do
-      r_records = Ygg::Acao::MainDb::Socio.order(:id_soci_dati_generale => :asc)
-      l_records = Ygg::Core::Person.where('acao_ext_id IS NOT NULL').order(:acao_ext_id => :asc)
+
+      r_records = Ygg::Acao::MainDb::Socio.all.joins(:iscrizioni).merge(Ygg::Acao::MainDb::SocioIscritto.where(:anno_iscrizione => 2014)).order(:codice_socio_dati_generale => :asc)
+      l_records = Ygg::Core::Person.where('acao_code IS NOT NULL').order(:acao_code => :asc)
 
       r_enum = r_records.each
       l_enum = l_records.each
@@ -27,14 +34,15 @@ namespace :acao do
       l = l_enum.next rescue nil
 
       while r || l
-        if l && !l.acao_ext_id
+#puts "#{l ? l.acao_code : 'NIL'} VS #{r ? r.codice_socio_dati_generale : 'NIL'}"
+        if l && !l.acao_code
           # Ignore
           l = l_enum.next rescue nil
-        elsif !l || (r && r.id_soci_dati_generale < l.acao_ext_id)
-puts "ADDING SOCIO id=#{r.id_soci_dati_generale} CODICE=#{r.codice_socio_dati_generale}"
+        elsif !l || (r && r.codice_socio_dati_generale < l.acao_code)
+puts "ADDING SOCIO CODICE=#{r.codice_socio_dati_generale}"
 
           person = Ygg::Core::Person.create!({
-            :acao_ext_id => r.id_soci_dati_generale,
+            :acao_code => r.codice_socio_dati_generale,
             :acao_code => r.codice_socio_dati_generale,
             :first_name => r.Nome.blank? ? '?' : r.Nome,
             :last_name => r.Cognome,
@@ -47,7 +55,9 @@ puts "ADDING SOCIO id=#{r.id_soci_dati_generale} CODICE=#{r.codice_socio_dati_ge
 
           sleep 0.5
 
-          person.channels << Ygg::Core::Channel.new(:channel_type => 'email', :value => r.Email) if r.Email
+          r_email = (r.Email && !r.Email.strip.empty? && r.Email.strip != 'acao@acao.it') ? r.Email.strip : nil
+
+          person.channels << Ygg::Core::Channel.new(:channel_type => 'email', :value => r_email) if r_email
           person.channels << Ygg::Core::Channel.new(:channel_type => 'phone', :value => r.Telefono_Casa, :descr => 'Casa') if r.Telefono_Casa
           person.channels << Ygg::Core::Channel.new(:channel_type => 'phone', :value => r.Telefono_Ufficio, :descr => 'Ufficio') if r.Telefono_Ufficio
           person.channels << Ygg::Core::Channel.new(:channel_type => 'phone', :value => r.Telefono_Altro, :descr => 'Ufficio') if r.Telefono_Altro
@@ -57,27 +67,72 @@ puts "ADDING SOCIO id=#{r.id_soci_dati_generale} CODICE=#{r.codice_socio_dati_ge
 
           person.identities << Ygg::Core::Identity.new({
             :qualified => r.codice_socio_dati_generale.to_s + '@legacy.acao.it',
-            :credentials => [ Ygg::Core::Identity::Credential::HashedPassword.new(:password => r.Password) ],
+            :credentials => [ Ygg::Core::Identity::Credential::HashedPassword.new(:password => r.Password.strip) ],
           })
 
           person.identities << Ygg::Core::Identity.new({
-            :qualified => r.Email,
-            :credentials => [ Ygg::Core::Identity::Credential::HashedPassword.new(:password => r.Password) ],
+            :qualified => r.Email.strip,
+            :credentials => [ Ygg::Core::Identity::Credential::HashedPassword.new(:password => r.Password.strip) ],
           })
 
           added_records << r
 
           r = r_enum.next rescue nil
-        elsif !r || (l && r.id_soci_dati_generale > l.acao_ext_id)
+        elsif !r || (l && r.codice_socio_dati_generale > l.acao_code)
 puts "REMOVED SOCIO #{l.first_name} #{l.last_name}"
-          l.acao_ext_id = nil
+          l.acao_ext_id = l.acao_code
+          l.acao_code = nil
           l.save!
 
-          removed_records << l
+#          removed_records << l
 
           l = l_enum.next rescue nil
         else
-          updated_records << l
+          r_email = (r.Email && !r.Email.strip.empty? && r.Email.strip != 'acao@acao.it') ? r.Email.strip : nil
+
+          echan = l.channels.find_by_channel_type('email')
+          l_email = echan ? echan.value : nil
+
+          updated_records << {
+            :local => l.clone,
+            :remote => r.clone,
+            :old_email => l_email,
+            :new_email => r_email,
+          }
+puts "UPDATED SOCIO #{l.first_name} #{l.last_name}"
+if l_email != r_email
+  puts "UPD Email #{l_email} => #{r_email}"
+end
+
+          # We do not remove the old email FIXME
+          l.identities.each do |i|
+            i.credentials.each do |x|
+              if (x.class == Ygg::Core::Identity::Credential::HashedPassword ||
+                 x.class == Ygg::Core::Identity::Credential::ObfuscatedPassword) &&
+                 !x.match_by_password(r.Password.strip)
+                x.password = r.Password.strip
+                x.save!
+              end
+            end
+          end
+
+          if r_email && !l.identities.find_by_qualified(r_email)
+            l.identities << Ygg::Core::Identity.new({
+              :qualified => r_email,
+              :credentials => [ Ygg::Core::Identity::Credential::HashedPassword.new(:password => r.Password.strip) ],
+            })
+          elsif r_email && l.identities.find_by_qualified(r_email)
+            l.identities.find_by_qualified(r_email).delete
+          end
+
+          if l_email && !r_email
+            l.channels.where(:channel_type => 'email', :value => l_email).delete_all
+          elsif !l_email && r_email
+            l.channels << Ygg::Core::Channel.new(:channel_type => 'email', :value => r_email) if r_email
+          elsif l_email != r_email
+            echan.value = r_email
+            echan.save!
+          end
 
           l = l_enum.next rescue nil
           r = r_enum.next rescue nil
@@ -85,7 +140,7 @@ puts "REMOVED SOCIO #{l.first_name} #{l.last_name}"
       end
     end
 
-    # Merge annunci ML
+    # Merge soci ML
     ####################################################à
 
     r_emails = {}
@@ -96,6 +151,7 @@ puts "REMOVED SOCIO #{l.first_name} #{l.last_name}"
       'enzio.provvidone@it.agusta',
       'info@naer-design',
       'marco.cosso@mediaset,it',
+      'acao@acao.it',
     ]
 
     r_records.select { |x| !x.Email.empty? }.each { |x|
@@ -106,7 +162,7 @@ puts "REMOVED SOCIO #{l.first_name} #{l.last_name}"
       }
     }
 
-    l_emails = IO::popen([ '/usr/sbin/list_members', 'annunci' ]).read.split("\n").map { |x| x.strip.downcase }.sort!
+    l_emails = IO::popen([ '/usr/bin/ssh', '-i', '/opt/acao/acao', 'lists.acao.it', '/usr/sbin/list_members', 'soci' ]).read.split("\n").map { |x| x.strip.downcase }.sort!
 
     members_to_add = []
     members_to_remove = []
@@ -135,35 +191,50 @@ puts "REMOVED SOCIO #{l.first_name} #{l.last_name}"
     puts "ANNUNCI MEMBERS TO REMOVE = #{members_to_remove}"
 
     if members_to_add.any?
-      io = IO::popen([ '/usr/sbin/add_members', '-r', '-', '--admin-notify=y', '--welcome-msg=n', 'annunci' ], 'w')
+      io = IO::popen([ '/usr/bin/ssh', '-i', '/opt/acao/acao', 'lists.acao.it', '/usr/sbin/add_members', '-r', '-', '--admin-notify=n', '--welcome-msg=n', 'soci' ], 'w')
       io.write(members_to_add.join("\n"))
       io.close
     end
 
     if members_to_remove.any?
-      io = IO::popen([ '/usr/sbin/remove_members', '--file', '-', '--nouserack', '--noadminack', 'annunci' ], 'w')
+      io = IO::popen([ '/usr/bin/ssh', '-i', '/opt/acao/acao', 'lists.acao.it', '/usr/sbin/remove_members', '--file', '-', '--nouserack', '--noadminack', 'soci' ], 'w')
       io.write(members_to_remove.join("\n"))
       io.close
     end
 
-    # Update soci ML
+    # Update blabla ML
     ###############################
 
-    members_to_add = added_records.map { |x| "#{x.Nome} #{x.Cognome} <#{x.Email}>" }
+    members_to_add = added_records.select { |x| x.Email.strip != 'acao@acao.it' }.map { |x| "#{x.Nome} #{x.Cognome} <#{x.Email}>" }
 
-    puts "SOCI MEMBERS TO ADD = #{members_to_add}"
-    puts "SOCI MEMBERS TO REMOVE = #{members_to_remove}"
+    updated_records.each do |upd|
+      if upd[:old_email] && !upd[:new_email]
+        members_to_remove << upd[:old_email]
+      elsif !upd[:old_email] && upd[:new_email]
+        members_to_add << "#{upd[:remote].Nome} #{upd[:remote].Cognome} <#{upd[:new_email]}>"
+      elsif upd[:old_email] != upd[:new_email]
+        members_to_add << "#{upd[:remote].Nome} #{upd[:remote].Cognome} <#{upd[:new_email]}>"
+        members_to_remove << upd[:old_email]
+      end
+    end
+
+
+    puts "BLABLA MEMBERS TO ADD = #{members_to_add}"
+    puts "BLABLA MEMBERS TO REMOVE = #{members_to_remove}"
 
     if members_to_add.any?
-      io = IO::popen([ '/usr/sbin/add_members', '-r', '-', 'soci' ], 'w')
+      io = IO::popen([ '/usr/bin/ssh', '-i', '/opt/acao/acao', 'lists.acao.it', '/usr/sbin/add_members', '-r', '-', 'blabla' ], 'w')
       io.write(members_to_add.join("\n"))
       io.close
     end
 
     if members_to_remove.any?
-      io = IO::popen([ '/usr/sbin/remove_members', '--file', '-', 'soci' ], 'w')
+      io = IO::popen([ '/usr/bin/ssh', '-i', '/opt/acao/acao', 'lists.acao.it', '/usr/sbin/remove_members', '--file', '-', 'blabla' ], 'w')
       io.write(members_to_remove.join("\n"))
       io.close
     end
+  end
+
+  task(:sync => [ :'sync:flarmnet', :'sync:flights', :'sync:pilots' ]) do
   end
 end

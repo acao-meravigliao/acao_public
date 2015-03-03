@@ -6,6 +6,9 @@ class FlightsController < Ygg::Hel::RestController
   ar_controller_for Ygg::Acao::Flight
 
   view :grid do
+
+    eager_load :plane, :towplane, :towplane_pilot1, :towplane_pilot2, :plane_pilot1, :plane_pilot2
+
     empty!
     attribute(:id) { show! }
     attribute(:uuid) { show! }
@@ -17,17 +20,36 @@ class FlightsController < Ygg::Hel::RestController
     attribute(:plane) do
       include!
       empty!
+      shortcut_capabilities!
       attribute(:registration) { show! }
     end
     attribute(:towplane) do
       include!
       empty!
+      shortcut_capabilities!
       attribute(:registration) { show! }
+    end
+
+    attribute(:towplane_pilot1) do
+      include!
+      empty!
+      shortcut_capabilities!
+      attribute(:first_name) { show! }
+      attribute(:last_name) { show! }
+    end
+
+    attribute(:towplane_pilot2) do
+      include!
+      empty!
+      shortcut_capabilities!
+      attribute(:first_name) { show! }
+      attribute(:last_name) { show! }
     end
 
     attribute(:plane_pilot1) do
       include!
       empty!
+      shortcut_capabilities!
       attribute(:first_name) { show! }
       attribute(:last_name) { show! }
     end
@@ -35,6 +57,7 @@ class FlightsController < Ygg::Hel::RestController
     attribute(:plane_pilot2) do
       include!
       empty!
+      shortcut_capabilities!
       attribute(:first_name) { show! }
       attribute(:last_name) { show! }
     end
@@ -63,6 +86,15 @@ class FlightsController < Ygg::Hel::RestController
     end
   end
 
+  scope :glider_flights
+  scope :motorglider_flights
+  scope :pax_flights
+  scope :tow_flights
+
+#  def index
+#    prof = RubyProf.profile { super }
+#    RubyProf::FlatPrinter.new(prof).print(STDOUT, {})
+#  end
 end
 
 end

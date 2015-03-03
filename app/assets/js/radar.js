@@ -46,15 +46,17 @@ var radar = {
     });
 
     setInterval(function() { me.periodicCleanup(); }, 2000);
-    setInterval(function() { me.extrapolate(); }, 100);
+    setInterval(function() { me.extrapolate(); }, 75);
   },
 
   onMessage: function(message) {
     var me = this;
 
-    switch(message.msg_type) {
-    case 'station_update': me.onStationUpdate(message); break;
-    case 'traffic_update': me.onTrafficUpdate(message); break;
+//console.log("MSG=", message);
+
+    switch(message.payload.msg_type) {
+    case 'station_update': me.onStationUpdate(message.payload); break;
+    case 'traffic_update': me.onTrafficUpdate(message.payload); break;
     }
   },
 
@@ -78,7 +80,10 @@ var radar = {
         obj.data = message.msg.objects[key];
       } else {
         obj = {};
-        obj.flarm_code = key;
+
+        if ((m = key.match(/^flarm:(.*)/)))
+          obj.flarm_code = m[1];
+
         obj.data = message.msg.objects[key];
         obj.prev_sog = obj.data.sog;
 
@@ -96,15 +101,17 @@ var radar = {
           me.updateObjectIw(this.obj);
         });
 
-        jQuery.ajax(window.location.origin + '/ygg/acao/planes/by_code/' + key, {
-          dataType: 'json',
-          // FIXME usare obj nella closure non funziona???? Il binding è sempre quello dell'ultima funzione anonima definita
-          context: obj,
-          success: function(data) {
-            this.plane = data;
-            me.updateObjectData(this);
-          },
-        });
+        if (obj.flarm_code) {
+          jQuery.ajax(window.location.origin + '/ygg/acao/planes/by_code/' + obj.flarm_code, {
+            dataType: 'json',
+            // FIXME usare obj nella closure non funziona???? Il binding è sempre quello dell'ultima funzione anonima definita
+            context: obj,
+            success: function(data) {
+              this.plane = data;
+              me.updateObjectData(this);
+            },
+          });
+        }
 
         me.objects[key] = obj;
   //      me.updateObjectData(obj);
@@ -153,18 +160,37 @@ var radar = {
     }
   },
 
+  types: {
+    0: { name: 'unknown', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    1: { name: 'Aliante', icon: 'M -5,0 5,0 M 0,-1 0,3 M -1,3 1,3 z', color: 'white' },
+    2: { name: 'Traino', icon: 'M -3,0 3,0 M 0,-0.5 0,2 M -1,2 1,2 M -0.5,-0.5 0.5,-0.5 z', color: 'orange' },
+    3: { name: 'Elicottero', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    4: { name: 'Paracadutista', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    5: { name: 'Aereo Paracadutisti', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    6: { name: 'Deltaplano', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    7: { name: 'Parapendio', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    8: { name: 'Aereo a motore', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    9: { name: 'Jet', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    10: { name: 'Disco volante', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    11: { name: 'Mongolfiera', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    12: { name: 'Dirigibile', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    13: { name: 'UAV', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    14: { name: 'unknown', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+    15: { name: 'Oggetto', icon: 'M -5,0 5,0 M 0,-1 0,4 M -1,4 1,4 z', color: 'white' },
+  },
+
   updateObjectPosition: function(obj) {
     var me = this;
 
-console.log("O", obj.data.at);
+//console.log("O", obj.data);
     obj.marker.setPosition(new google.maps.LatLng(obj.data.lat, obj.data.lng));
 
     obj.marker.setIcon({
-      path: 'M -5,0 5,0 M 0,-2 0,4 M -1,4 1,4 z',
-      fillColor: 'white',
-      strokeColor: 'white',
+      path: me.getType(obj.data.type).icon,
+      fillColor:  me.getType(obj.data.type).color,
+      strokeColor:  me.getType(obj.data.type).color,
       strokeWeight: 2,
-      scale: 6,
+      scale: 5,
       rotation: obj.data.cog || 0,
       strokeOpacity: 1 - ((new Date - obj.last_update) / 10000),
     });
@@ -191,9 +217,15 @@ console.log("O", obj.data.at);
 
     txt +=
       'Height: ' + obj.data.alt.toFixed(0) + ' m<br />' +
-      'Speed: ' + (obj.data.sog * 3.6).toFixed(0) + ' km/h<br />';
+      'Speed: ' + (obj.data.sog * 3.6).toFixed(0) + ' km/h<br />' +
+      'Type: ' + me.getType(obj.data.type).name + '<br />';
 
     me.iw.setContent(txt);
+  },
+
+  getType: function(type) {
+    var me = this;
+    return me.types[type] ? me.types[type] : me.types[0];
   },
 
   updateObjectData: function(obj) {
@@ -237,9 +269,9 @@ console.log("O", obj.data.at);
       'GPS fix type: ' + me.fix_types[station.data.gps_fix_type] + ' (' + station.data.gps_sats + ' sats)<br />' +
       'GPS fix quality: ' + station.data.gps_fix_qual + '<br />' +
       'GPS precision: ' + station.data.gps_pdop + '<br />' +
-      'Lat: ' + station.data.lat + '<br />' +
-      'Lng: ' + station.data.lng + '<br />' +
-      'Altitude: ' + station.data.alt + '<br />'
+      'Lat: ' + station.data.lat.toFixed(8) + '°<br />' +
+      'Lng: ' + station.data.lng.toFixed(8) + '°<br />' +
+      'Altitude: ' + station.data.alt + ' m<br />'
     );
   },
 };

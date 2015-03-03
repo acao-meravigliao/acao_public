@@ -1,4 +1,6 @@
 Acao::Application.configure do
+  config.eager_load = true
+
   config.assets.debug = false
 
   config.assets.digest = true

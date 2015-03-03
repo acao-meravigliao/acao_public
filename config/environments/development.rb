@@ -27,6 +27,8 @@ Acao::Application.configure do
   # Avoid having precompiled assets being served
   config.assets.prefix = '/assets-dev'
 
+  config.extgui.compile_trees << 'AcaoServices'
+
   config.extgui.ext_core_js = 'ext/ext-dev.js'
   config.extgui.hel_host = '127.0.0.1:3100'
   config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye/faye.js" }

@@ -23,30 +23,88 @@ class Flight < Ygg::PublicModel
   belongs_to :towplane_pilot2,
              :class_name => 'Ygg::Core::Person'
 
-  has_acl
-
-  def owners
-    [ plane_pilot1, plane_pilot2, towplane_pilot1, towplane_pilot2 ]
-  end
-
-  def self.belonging_to(entity)
-    case entity
-    when Ygg::Core::Identity
-    when Ygg::Core::Person
-      joins { plane_pilot1.outer }.
-      joins { plane_pilot2.outer }.
-      joins { towplane_pilot1.outer }.
-      joins { towplane_pilot2.outer }.where{
-        (
-          plane_pilot1.id.eq(entity.id) |
-          plane_pilot2.id.eq(entity.id) |
-          towplane_pilot1.id.eq(entity.id) |
-          towplane_pilot2.id.eq(entity.id)
-        )
-      }
-    when Ygg::Core::Organization
+  interface :rest do
+    capability :owner do
+#      allow :show
+      default_readable!
+      readable :bollini_volo
+      readable :takeoff_at
+      readable :landing_at
     end
   end
+
+  append_with_capability(:model) do |rel, aaa_context, capa|
+    if !capa
+      belonging_to(aaa_context.auth_identity.person)
+    elsif capa == :owner
+      belonging_to(aaa_context.auth_identity.person)
+    else
+      rel
+    end
+  end
+
+  def self.belonging_to(person)
+    joins { plane_pilot1.outer }.
+    joins { plane_pilot2.outer }.
+    joins { towplane_pilot1.outer }.
+    joins { towplane_pilot2.outer }.where{
+      (
+        plane_pilot1.id.eq(person.id) |
+        plane_pilot2.id.eq(person.id) |
+        towplane_pilot1.id.eq(person.id) |
+        towplane_pilot2.id.eq(person.id)
+      )
+    }
+  end
+
+  append_class_capabilities_for(:model) do |aaa_context|
+    []
+  end
+
+  append_capabilities_for(:model) do |aaa_context|
+    [ plane_pilot1, plane_pilot2, towplane_pilot1, towplane_pilot2 ].include?(aaa_context.auth_identity.person) ? [ :owner ] : []
+  end
+
+  module Scopes
+    def glider_flights(aaa_context)
+      joins { plane_pilot1.outer }.
+      joins { plane_pilot2.outer }.
+      where { (
+        plane_pilot1.id.eq(aaa_context.auth_identity.person.id) |
+        plane_pilot2.id.eq(aaa_context.auth_identity.person.id)
+      ) }
+    end
+
+    def motorglider_flights(aaa_context)
+      joins { towplane_pilot1.outer }.
+      joins { towplane_pilot2.outer }.
+      where { (
+        (towplane_pilot1.id.eq(aaa_context.auth_identity.person.id) |
+        towplane_pilot2.id.eq(aaa_context.auth_identity.person.id)) &
+        (plane_pilot1_id.eq(nil)) & (plane_pilot2_id.eq(nil))
+      ) }
+    end
+
+    def pax_flights(aaa_context)
+      joins { plane_pilot2.outer }.
+      joins { towplane_pilot2.outer }.
+      where { (
+        plane_pilot2.id.eq(aaa_context.auth_identity.person.id) |
+        towplane_pilot2.id.eq(aaa_context.auth_identity.person.id)
+      ) }
+    end
+
+    def tow_flights(aaa_context)
+      joins { towplane_pilot1.outer }.
+      joins { towplane_pilot2.outer }.
+      where { (
+        towplane_pilot1.id.eq(aaa_context.auth_identity.person.id) |
+        towplane_pilot2.id.eq(aaa_context.auth_identity.person.id)
+      ) }
+    end
+  end
+  extend Scopes
+
 
   def self.sync_frequent!
     sync!(:limit => 200)

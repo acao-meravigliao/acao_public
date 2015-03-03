@@ -20,17 +20,35 @@ Ext.define('Extgui.Acao.Flight.IndexPanel', {
 
   title: 'Acao Flights',
   model: 'Ygg.Acao.Flight',
+
   storeConfig: {
     sorters: {
       property: 'takeoff_at',
       direction: 'DESC',
     },
   },
+
+  scopes: {
+    glider_flights: { text: 'Voli in aliante' },
+    motorglider_flights: { text: 'Voli in motoaliante' },
+    pax_flights: { text: 'Voli come passeggero' },
+    tow_flights: { text: 'Voli traino' },
+  },
+
   columns: [
    {
     xtype: 'stringtemplatecolumn',
-    text: 'P1',
-//    dataIndex: '',
+    text: 'Aliante',
+    dataIndex: 'plane.registration',
+    tpl: '<tpl if="plane">{plane.registration}</tpl>',
+    width: 80,
+    filterable: true,
+    searchable: true,
+   },
+   {
+    xtype: 'stringtemplatecolumn',
+    text: 'Aliante P1',
+    searchIn: [ 'plane_pilot1.first_name', 'plane_pilot1.last_name' ],
     tpl: '<tpl if="plane_pilot1">{plane_pilot1.first_name} {plane_pilot1.last_name}</tpl>',
     width: 200,
     filterable: false,
@@ -38,8 +56,8 @@ Ext.define('Extgui.Acao.Flight.IndexPanel', {
    },
    {
     xtype: 'stringtemplatecolumn',
-    text: 'P2',
-//    dataIndex: '',
+    text: 'Aliante P2',
+    searchIn: [ 'plane_pilot2.first_name', 'plane_pilot2.last_name' ],
     tpl: '<tpl if="plane_pilot2">{plane_pilot2.first_name} {plane_pilot2.last_name}</tpl>',
     width: 200,
     filterable: false,
@@ -51,17 +69,27 @@ Ext.define('Extgui.Acao.Flight.IndexPanel', {
     dataIndex: 'towplane.registration',
     tpl: '<tpl if="towplane">{towplane.registration}</tpl>',
     width: 80,
+    filterable: true,
+    searchable: true,
+   },
+   {
+    xtype: 'stringtemplatecolumn',
+    text: 'Traino P1',
+    searchIn: [ 'towplane_pilot1.first_name', 'towplane_pilot1.last_name' ],
+    tpl: '<tpl if="towplane_pilot1">{towplane_pilot1.first_name} {towplane_pilot1.last_name}</tpl>',
+    width: 200,
     filterable: false,
     searchable: true,
    },
    {
     xtype: 'stringtemplatecolumn',
-    text: 'Aliante',
-    dataIndex: 'plane.registration',
-    tpl: '<tpl if="plane">{plane.registration}</tpl>',
-    width: 80,
+    text: 'Traino P2',
+    searchIn: [ 'towplane_pilot2.first_name', 'towplane_pilot2.last_name' ],
+    tpl: '<tpl if="towplane_pilot2">{towplane_pilot1.first_name} {towplane_pilot2.last_name}</tpl>',
+    width: 200,
     filterable: false,
     searchable: true,
+    hidden: true,
    },
    {
     xtype: 'datecolumn',

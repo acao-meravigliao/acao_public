@@ -6,7 +6,7 @@
     <meta name="keywords" content="" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1200, initial-scale=0.5, minimum-scale=0.5, maximum-scale=1.5, user-scalable=yes">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <%= favicon_link_tag Rails.application.config.extgui.favicon %>
     <style type="text/css">
       html { height: 100% }
@@ -41,11 +41,33 @@
 <div id="player">Loading the player...</div>
 <script type="text/javascript">
     jwplayer("player").setup({
-      title: 'ACAO Live Camera',
+      title: 'Manica a Vento',
       width: '100%',
-      autostart: true,
-      image: '/acao.jpg',
-      file: '/cam.m3u8'
+      autostart: false,
+      image: '/cam/cam1/idle.jpg',
+      file: '/cam/cam1/live.m3u8'
+    });
+</script>
+
+<div id="player2">Loading the player...</div>
+<script type="text/javascript">
+    jwplayer("player2").setup({
+      title: 'Pista 28',
+      width: '100%',
+      autostart: false,
+      image: '/cam/cam2/idle.jpg',
+      file: '/cam/cam2/live.m3u8'
+    });
+</script>
+
+<div id="player3">Loading the player...</div>
+<script type="text/javascript">
+    jwplayer("player3").setup({
+      title: 'Piazzale',
+      width: '100%',
+      autostart: false,
+      image: '/cam/cam3/idle.jpg',
+      file: '/cam/cam3/live.m3u8'
     });
 </script>
           </div>

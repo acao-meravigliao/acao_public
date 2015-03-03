@@ -1,26 +1,30 @@
 source 'https://rubygems.org'
 source 'http://gems.intercom.it/'
 
-gem 'rails', '~> 4.0.2'
+gem 'rails', '~> 4.1.0'
 gem 'rails-observers'
+gem 'squeel', :git => 'https://github.com/activerecord-hackery/squeel.git'
 
 gem 'pg'
 gem 'tiny_tds'
-gem 'activerecord-sqlserver-adapter', :git => 'https://github.com/rails-sqlserver/activerecord-sqlserver-adapter.git'
+gem 'activerecord-sqlserver-adapter'#, :git => 'https://github.com/rails-sqlserver/activerecord-sqlserver-adapter.git', :ref => 'e3bcabffd5b3f37c4bd8a56ede2f295b43b86008'
 
 gem 'pry'
 gem 'pry-rails'
+gem 'awesome_print'
 
 gem 'curb'
 gem 'exception_notification', '>= 4.0.1'
-gem 'squeel'
 gem 'geocoder'
 gem 'state_machine'
 
 gem 'vihai-password', '>= 1.2.0'
-gem 'active_rest', '~> 6.5.0'#, :path => '../submodules/active_rest'
+gem 'active_rest', '~> 6.8.0'#, :path => '../yggdra/submodules/active_rest'
 
 gem 'jquery-rails'
+
+
+gem 'ruby-prof'
 
 group :production do
 end
@@ -29,14 +33,13 @@ group :test, :development do
   gem 'puma'
   gem 'better_errors'
   gem 'binding_of_caller'
-  gem 'awesome_print'
 end
 
 group :assets do
   gem 'sass-rails', '~> 4.0.0'
-  gem 'uglifier'
-  gem 'therubyracer', platforms: :ruby
-  gem 'sprockets_better_errors'
+  gem 'uglifier', '>= 1.3.0'
+  gem 'therubyracer'
+#  gem 'sprockets_better_errors'
 end
 
 group :doc do

@@ -11,7 +11,7 @@ Ext.define('AcaoServices.MainController', {
   extend: 'Extgui.MainControllerBase',
   requires: [
     'AcaoServices.Viewport',
-    'AcaoServices.LoginDialog'
+    'AcaoServices.LoginDialog',
   ],
   viewport: 'AcaoServices.Viewport',
 
