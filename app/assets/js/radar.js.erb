@@ -34,12 +34,9 @@ var radar = {
 
     me.objects = {};
 
-    me.station = {
-      station_id: 'FLARM1',
-      data: {},
-    };
+    me.stations = {};
 
-    faye.subscribe('/glideradar/events', function(message) {
+    faye.subscribe('/glideradar/events/**', function(message) {
       me.onMessage(message);
     }, null, function() {
       alert('Error subscribing to wall!');
@@ -52,43 +49,62 @@ var radar = {
   onMessage: function(message) {
     var me = this;
 
-//console.log("MSG=", message);
+    //console.log("MSG=", message);
 
-    switch(message.payload.msg_type) {
-    case 'station_update': me.onStationUpdate(message.payload); break;
-    case 'traffic_update': me.onTrafficUpdate(message.payload); break;
+    switch(message.type) {
+    case 'STATION_UPDATE': me.onStationUpdate(message.payload); break;
+    case 'TRAFFIC_UPDATE': me.onTrafficUpdate(message.payload); break;
     }
   },
 
   onStationUpdate: function(message) {
     var me = this;
 
-    me.station.data = message.msg;
-    me.refreshStation(me.station);
+    var station = me.stations[message.station_id];
+
+    if (!station) {
+      station = me.stations[message.station_id] = {
+        station_id: message.station_id,
+        data: {},
+      };
+    }
+
+    station.data = message;
+    station.last_update = new Date;
+    station.online = true;
+
+    me.refreshStation(station);
   },
 
   onTrafficUpdate: function(message) {
     var me = this;
 
-    var keys = Object.keys(message.msg.objects);
+    var keys = Object.keys(message.objects);
     for (var i = 0 ; i< keys.length; i++) {
       var key = keys[i];
       var obj = me.objects[key];
+      var data = message.objects[key];
 
       if (obj) {
-        obj.prev_sog = obj.data.sog;
-        obj.data = message.msg.objects[key];
+        obj.prev_cog = obj.cog;
+        obj.prev_sog = obj.sog;
+        obj.srcs[message.station_id] = data;
       } else {
-        obj = {};
+        obj = {
+          srcs: {},
+        };
 
         if ((m = key.match(/^flarm:(.*)/)))
           obj.flarm_code = m[1];
 
-        obj.data = message.msg.objects[key];
-        obj.prev_sog = obj.data.sog;
+        obj.srcs[message.station_id] = data;
+
+        obj.prev_cog = data.cog;
+        obj.prev_sog = data.sog;
+        obj.type = data.type;
 
         obj.marker = new MarkerWithLabel({
-          position: new google.maps.LatLng(obj.data.lat, obj.data.lng),
+          position: new google.maps.LatLng(obj.lat, obj.lng),
           labelContent: key,
           labelClass: 'label',
           map: me.map,
@@ -118,6 +134,36 @@ var radar = {
       }
 
       obj.last_update = new Date;
+      obj.srcs[message.station_id].last_update = new Date;
+
+      var cnt = 0, s_alt = 0.0, s_cog = 0.0, s_cr = 0.0, s_lat = 0.0, s_lng = 0.0, s_sog = 0.0, s_tr = 0.0
+
+      var k2 = Object.keys(obj.srcs);
+      for (var j = 0 ; j < k2.length; j++) {
+        val = obj.srcs[k2[j]];
+
+        if (new Date - val.last_update < 3000) {
+          cnt += 1;
+
+          s_alt += val.alt;
+          s_cog += val.cog;
+          s_cr += val.cr;
+          s_lat += val.lat;
+          s_lng += val.lng;
+          s_sog += val.sog;
+          s_tr += val.tr; // Modulo 360 TODO
+        }
+      }
+
+      if (cnt > 0) {
+        obj.alt = s_alt / cnt;
+        obj.cog = s_cog / cnt;
+        obj.cr = s_cr / cnt;
+        obj.lat = s_lat / cnt;
+        obj.lng = s_lng / cnt;
+        obj.sog = s_sog / cnt;
+        obj.tr = s_tr / cnt;
+      }
 
       me.updateObjectPosition(obj);
     }
@@ -136,10 +182,23 @@ var radar = {
       if (now - obj.last_update > 10000) {
         obj.marker.setMap(null);
         delete me.objects[key];
-      } else if (now - obj.last_update > 2000) {
-        me.updateObjectPosition(obj);
       }
     }
+
+    var keys = Object.keys(me.stations);
+    for (var i = 0 ; i < keys.length; i++) {
+      var key = keys[i];
+      var sta = me.stations[key];
+
+      if (now - sta.last_update > 10000) {
+        sta.marker.setMap(null);
+      }
+    }
+  },
+
+  adiff: function(a, b) {
+    var d = a - b;
+    return d < -180 ? d + 360 : (d > 180 ? d - 360 : d);
   },
 
   extrapolate: function() {
@@ -149,14 +208,35 @@ var radar = {
     for (var i = 0 ; i < keys.length; i++) {
       var key = keys[i];
       var obj = me.objects[key];
-      var del = (new Date - obj.last_update) / 1000; // DeltaT in seconds
-      var spd = obj.data.sog + (obj.data.sog - obj.prev_sog) * del;
-      var cograd = ((obj.data.cog + obj.data.tr * del) / 180) * Math.PI;
+      var del = (new Date - obj.last_update) / 1000.0; // DeltaT in seconds
+      var spd = obj.sog + (obj.sog - obj.prev_sog) * del;
+
+      // Avoid redrawing objects on the ground
+      if (spd < 5)
+        continue;
+
+      var tr = me.adiff(obj.cog, obj.prev_cog); // obj.tr
+
+      if (tr > 20) tr = 20;
+      if (tr < -20) tr = -20;
+
+      var cog = obj.cog + tr * del;
+      var cograd = (cog / 180) * Math.PI;
 
       obj.marker.setPosition(new google.maps.LatLng(
-        obj.data.lat + (Math.cos(cograd) * spd * del) / 111111,
-        obj.data.lng + (Math.sin(cograd) * spd * del) / (111111 * Math.cos((obj.data.lat / 180) * Math.PI))
+        obj.lat + (Math.cos(cograd) * spd * del) / 111111,
+        obj.lng + (Math.sin(cograd) * spd * del) / (111111 * Math.cos((obj.lat / 180) * Math.PI))
       ));
+
+      obj.marker.setIcon({
+        path: me.getType(obj.type).icon,
+        fillColor:  me.getType(obj.type).color,
+        strokeColor:  me.getType(obj.type).color,
+        strokeWeight: 2,
+        scale: 5,
+        rotation: cog,
+        strokeOpacity: 1 - ((new Date - obj.last_update) / 10000),
+      });
     }
   },
 
@@ -183,15 +263,15 @@ var radar = {
     var me = this;
 
 //console.log("O", obj.data);
-    obj.marker.setPosition(new google.maps.LatLng(obj.data.lat, obj.data.lng));
+    obj.marker.setPosition(new google.maps.LatLng(obj.lat, obj.lng));
 
     obj.marker.setIcon({
-      path: me.getType(obj.data.type).icon,
-      fillColor:  me.getType(obj.data.type).color,
-      strokeColor:  me.getType(obj.data.type).color,
+      path: me.getType(obj.type).icon,
+      fillColor:  me.getType(obj.type).color,
+      strokeColor:  me.getType(obj.type).color,
       strokeWeight: 2,
       scale: 5,
-      rotation: obj.data.cog || 0,
+      rotation: obj.cog || 0,
       strokeOpacity: 1 - ((new Date - obj.last_update) / 10000),
     });
 
@@ -213,12 +293,14 @@ var radar = {
 
       txt +=
         'Owner: ' + obj.plane.owner_name + '<br />';
+    } else {
+      txt += '<b>' + me.getType(obj.type).name + '</b><br />';
     }
 
     txt +=
-      'Height: ' + obj.data.alt.toFixed(0) + ' m<br />' +
-      'Speed: ' + (obj.data.sog * 3.6).toFixed(0) + ' km/h<br />' +
-      'Type: ' + me.getType(obj.data.type).name + '<br />';
+      'Height: ' + obj.alt.toFixed(0) + ' m<br />' +
+      'Speed: ' + (obj.sog * 3.6).toFixed(0) + ' km/h<br />' +
+      'V/S: ' + (obj.cr * 3.6).toFixed(1) + ' m/s<br />';
 
     me.iw.setContent(txt);
   },
@@ -246,6 +328,10 @@ var radar = {
         position: pos,
         title: station.station_id,
         map: me.map,
+        icon: {
+          url: '<%=asset_path('antenna.png')%>',
+          anchor: new google.maps.Point(12, 32),
+        },
       });
 
       google.maps.event.addListener(station.marker, 'click', function (e) {

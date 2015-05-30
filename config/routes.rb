@@ -15,7 +15,7 @@ Acao::Application.routes.draw do
   get 'radar' => 'radar#main'
   get 'radar/embed' => 'radar#embed'
 
-  get 'wind' => 'wind#main'
+  get 'meteo' => 'meteo#main'
 
   get 'services' => 'extgui/main#index'
 

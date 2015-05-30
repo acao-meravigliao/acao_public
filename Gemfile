@@ -26,6 +26,9 @@ gem 'jquery-rails'
 
 gem 'ruby-prof'
 
+gem 'json_exceptions', :path => '../yggdra/plugins/json_exceptions'
+
+
 group :production do
 end
 
