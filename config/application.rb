@@ -26,7 +26,6 @@ module Acao
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'js')
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'css')
 
-    config.core.amqp_host = 'amqp://agent:JahrizeiX9ix@iserver.acao.it'
     config.core.faye_address = 'http://localhost:8000/faye'
 
     config.extgui.page_title = 'ACAO Area Servizi'
