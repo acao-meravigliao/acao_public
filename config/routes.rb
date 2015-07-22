@@ -19,7 +19,7 @@ Acao::Application.routes.draw do
 
   get 'services' => 'extgui/main#index'
 
-  root :to => redirect('https://acao.it')
+  root :to => 'radar#main'
 
   namespace :ygg do
     namespace :acao do

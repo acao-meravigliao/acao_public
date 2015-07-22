@@ -10,7 +10,7 @@ acao_sqlserver:
   dataserver: acao_sql_server
   database: 
   username: orlandi
-  password: orlandi
+  password: weefae5Aidie
 
 production:
   adapter: postgresql

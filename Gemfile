@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
-source 'http://gems.intercom.it/'
 
-gem 'rails', '~> 4.1.0'
+gem 'rails', '~> 4.2.0'
 gem 'rails-observers'
 gem 'squeel', :git => 'https://github.com/activerecord-hackery/squeel.git'
+gem 'responders'
 
 gem 'pg'
 gem 'tiny_tds'
@@ -18,15 +18,14 @@ gem 'exception_notification', '>= 4.0.1'
 gem 'geocoder'
 gem 'state_machine'
 
-gem 'vihai-password', '>= 1.2.0'
-gem 'active_rest', '~> 6.8.0'#, :path => '../yggdra/submodules/active_rest'
-
 gem 'jquery-rails'
-
 
 gem 'ruby-prof'
 
-gem 'json_exceptions', :path => '../yggdra/plugins/json_exceptions'
+source 'http://gems.intercom.it/' do
+  gem 'vihai-password', '>= 1.2.0'
+  gem 'active_rest', '~> 6.8.0', :path => '../yggdra/submodules/active_rest'
+end
 
 
 group :production do
@@ -50,6 +49,7 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+gem 'json_exceptions', :path => '../yggdra/plugins/json_exceptions'
 gem 'autosvg', :path => '../yggdra/plugins/autosvg'
 
 gem 'yggdra_plugins', :path => '../yggdra/plugins/yggdra_plugins'

@@ -9,6 +9,11 @@ class Plane < Ygg::PublicModel
   self.table_name = :planes
 
   interface :rest do
+    capability :anonymous do
+      allow :show
+      default_readable!
+    end
+
     capability :simple_interface do
       allow :show
       default_readable!
