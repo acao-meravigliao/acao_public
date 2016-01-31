@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tracking receiver sample</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="UTF-8" />
+    <script src="/faye/faye.js"></script>
+  </head>
+  <body>
+    Messages are logged in JS console.
+
+  <script type="text/javascript">
+
+var faye = new Faye.Client("/faye");
+
+faye.subscribe('/glideradar/processed/**', function(message) {
+  console.log("MSG=", message);
+}, null, function() {
+  alert('Error subscribing to faye events!');
+});
+
+  </script>
+</body>
+</html>

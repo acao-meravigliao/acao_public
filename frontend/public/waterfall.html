@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title></title>
+
+  <script type="text/javascript" src="jquery-1.11.2.js"></script>
+  <script type="text/javascript" src="chroma.js"></script>
+
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+
+<canvas id="canvas" width="800" height="512" style="display: block; background-color: black ;"></canvas>
+
+<script type="text/javascript">
+
+// get the context from the canvas to draw on
+var ctx = $("#canvas").get()[0].getContext("2d");
+
+
+
+// create a temp canvas we use for copying
+var tempCanvas = document.createElement("canvas"),
+    tempCtx = tempCanvas.getContext("2d");
+tempCanvas.width=800;
+tempCanvas.height=512;
+
+// used for color distribution
+var hot = new chroma.ColorScale({
+    colors:['#000000', '#ff0000', '#ffff00', '#ffffff'],
+    positions:[0, .25, .75, 1],
+    mode:'rgb',
+    limits:[0, 300]
+});
+
+$( document ).ready(function() {
+  var a = [];
+  for(i=0; i<512; i++) {
+    a[i] = Math.random()*256;
+  }
+
+  drawSpectrogram(a);
+});
+
+
+function drawSpectrogram(array) {
+  // copy the current canvas onto the temp canvas
+  var canvas = document.getElementById("canvas");
+
+  tempCtx.drawImage(canvas, 0, 0, 800, 512);
+
+  // iterate over the elements from the array
+  for (var i = 0; i < array.length; i++) {
+      // draw each pixel with the specific color
+      var value = array[i];
+      ctx.fillStyle = hot.getColor(value).hex();
+
+      // draw the line at the right side of the canvas
+      ctx.fillRect(800 - 1, 512 - i, 1, 1);
+  }
+
+  // set translate on the canvas
+  ctx.translate(-1, 0);
+  // draw the copied image
+  ctx.drawImage(tempCanvas, 0, 0, 800, 512, 0, 0, 800, 512);
+
+  // reset the transformation matrix
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+</script>
+
+
+</body>
+</html>
