@@ -18,6 +18,4 @@ Rails.application.routes.draw do
   get 'meteo' => 'meteo#main'
 
   get 'services' => 'extgui/main#index'
-
-  root :to => 'radar#main'
 end
