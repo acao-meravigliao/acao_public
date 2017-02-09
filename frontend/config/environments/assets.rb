@@ -12,9 +12,6 @@ Rails.application.configure do
   config.extgui.ext_core_js = 'ext/ext-dev.js'
   config.extgui.hel_host = 'http://[::1]:3330'
 
-  config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye/faye.js" }
-  config.extgui.faye_interface_uri = lambda { "#{request.protocol}#{request.host}:8000/faye" }
-
   config.assets.precompile += [
     /\w+\.(?!js|css)$/,
     'acao_services.css',
@@ -27,6 +24,8 @@ Rails.application.configure do
     'ext/resources/ext-theme-access/ext-theme-access-all.css',
     'ext/resources/ext-theme-neptune/ext-theme-neptune-all.css',
     'ext/resources/ext-theme-redtune/ext-theme-redtune-all.css',
+    'video.js',
+    'video.css',
     'radar.js',
     'meteo.js',
   ]

@@ -21,8 +21,9 @@ Rails.application.configure do
 
   # Debug mode disables concatenation and preprocessing of assets.
   config.assets.debug = true
-
-  config.assets.raise_production_errors = true
+  config.assets.raise_runtime_errors = false
+  config.assets.raise_production_errors = false
+  config.assets.check_precompiled_asset = false
 
   # Avoid having precompiled assets being served
   config.assets.prefix = '/assets-dev'
@@ -30,12 +31,10 @@ Rails.application.configure do
   config.extgui.compile_trees << 'AcaoPublic'
 
   config.extgui.ext_core_js = 'ext/ext-dev.js'
-  config.extgui.hel_host = 'http://[::1]:3330'
+  config.extgui.hel_host = 'http://[::1]:3100'
+  config.extgui.ws_uri = lambda { "ws://#{request.host}:3100/ws" }
 
-  config.extgui.faye_source_uri = lambda { "#{request.protocol}#{request.host}:8000/faye/faye.js" }
-  config.extgui.faye_interface_uri = lambda { "#{request.protocol}#{request.host}:8000/faye" }
-
-  require ::File.expand_path('../../../lib/proxy',  __FILE__)
+  require_relative '../../lib/proxy'
   config.middleware.use Rack::Proxy do |req|
     if req.path =~ %r{^/ygg/(.*)}
       URI.parse("#{Rails.application.config.extgui.hel_host}/ygg/#{$1}?#{req.query_string}")

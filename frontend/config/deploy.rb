@@ -12,7 +12,7 @@ require 'mina/simple'
 #   branch       - Branch name to deploy. (needed by mina/git)
 
 set :user, 'yggdra'
-set :domain, 'localhost'
+set :domain, 'iserver.acao.it'
 set :deploy_to, '/opt/acao_public/frontend'
 
 set :shared_paths, [ 'log', ]
@@ -35,6 +35,7 @@ end
 task :bundler_workaround do
   queue 'echo -----> Applying workaround to bundler bug'
   queue! %[ sed -i 's/\\.\\.\\/\\.\\.\\/yggdra\\/plugins\\//vendor\\/cache\\//g' Gemfile ]
+  queue! %[ sed -i 's/\\.\\.\\/\\.\\.\\/acao_plugins\\//vendor\\/cache\\//g' Gemfile ]
 end
 
 desc 'Does local cleanup'

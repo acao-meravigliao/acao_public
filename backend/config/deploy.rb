@@ -12,7 +12,7 @@ require 'mina/simple'
 #   branch       - Branch name to deploy. (needed by mina/git)
 
 set :user, 'yggdra'
-set :domain, 'localhost'
+set :domain, 'iserver.acao.it'
 set :deploy_to, '/opt/acao_public/backend'
 # set :user, 'foobar'    # Username in the server to SSH to.
 # set :port, '30000'     # SSH port number.
@@ -41,6 +41,7 @@ task :bundler_workaround do
   queue 'echo -----> Applying workaround to bundler bug'
   queue! %[ sed -i 's/\\.\\.\\/\\.\\.\\/yggdra\\/plugins\\//vendor\\/cache\\//g' Gemfile ]
   queue! %[ sed -i 's/\\.\\.\\/\\.\\.\\/yggdra\\/agents\\//vendor\\/cache\\//g' Gemfile ]
+  queue! %[ sed -i 's/\\.\\.\\/\\.\\.\\/acao_plugins\\//vendor\\/cache\\//g' Gemfile ]
 end
 
 desc 'Does local cleanup'
@@ -65,9 +66,9 @@ task :deploy => :environment do
       invoke :'rails:db_migrate'
     end
 
-    to :launch do
-      queue! '/usr/local/bin/pumactl -S log/puma-production.state restart ; true'
-    end
+#    to :launch do
+#      queue! '/usr/local/bin/pumactl -S log/puma-production.state restart ; true'
+#    end
   end
 
   invoke :local_cleanup

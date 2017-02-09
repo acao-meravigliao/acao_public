@@ -1,4 +1,4 @@
-bind 'tcp://[::]:3331'
+bind 'tcp://[::]:3101'
 
 threads 8,32
 workers 3

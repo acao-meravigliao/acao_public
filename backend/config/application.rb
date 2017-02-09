@@ -1,10 +1,15 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+
+require 'ygg/i18n/backend'
+I18n.backend = Ygg::I18n::Backend.new
+
+require 'socket'
 
 module Acao
   class Application < Rails::Application
@@ -26,6 +31,50 @@ module Acao
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'js')
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'css')
 
-    config.core.faye_address = 'http://localhost:8000/faye'
+    config.rails_amqp.url = 'amqp://agent@lino.acao.it'
+    config.rails_amqp.debug = 0
+
+    config.amqp_ws_gw.authentication_needed = false
+
+    config.amqp_ws_gw.routes = {
+      'ygg.glideradar.processed_traffic': {
+        exchange_type: :topic,
+        exchange_options: {
+          durable: true,
+          auto_delete: false,
+        },
+        routing_key: '#',
+        queue_name: 'ygg.glideradar.processed_traffic.backend.' + Socket.gethostname,
+        queue_options: {
+          durable: false,
+          auto_delete: true,
+          arguments: {
+            'x-message-ttl': 30000,
+          },
+        },
+      },
+      'ygg.meteo.updates': {
+        exchange_type: :topic,
+        exchange_options: {
+          durable: true,
+          auto_delete: false,
+        },
+        routing_key: '#',
+        queue_name: 'ygg.meteo.updates.backend.' + Socket.gethostname,
+        queue_options: {
+          durable: false,
+          auto_delete: true,
+          arguments: {
+            'x-message-ttl': 30000,
+          },
+        },
+      },
+    }
+
+    config.amqp_ws_gw.allowed_request_origins = [
+      'https://acao.it',
+      'http://linobis.acao.it:3000',
+      'http://linobis.acao.it:3101',
+    ]
   end
 end
