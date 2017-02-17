@@ -1,15 +1,17 @@
 source 'https://rubygems.org'
 
 gem 'rails', '~> 5.0.0'
-gem 'sprockets-rails', '~> 3.2.0'
 
 gem 'puma'
+gem 'puma-plugin-systemd'
 
 gem 'pry'
 gem 'pry-rails'
 gem 'awesome_print'
 
 gem 'exception_notification', '>= 4.0.1'
+
+gem 'sprockets-rails', '~> 3.2.0'
 
 gem 'jquery-rails'
 
@@ -34,6 +36,8 @@ gem 'extgui', path: '../../yggdra/plugins/extgui'
 
 gem 'core_extgui', path: '../../yggdra/plugins/core_extgui'
 gem 'shop_extgui', path: '../../yggdra/plugins/shop_extgui'
+gem 'i18n_extgui', path: '../../yggdra/plugins/i18n_extgui'
+gem 'ml_extgui', path: '../../yggdra/plugins/ml_extgui'
 gem 'acao_extgui', path: '../../acao_plugins/acao_extgui'
-
-gem 'acao_cam', path: '../../acao_plugins/acao_cam'
+gem 'streaming_extgui', path: '../../yggdra/plugins/streaming_extgui'
+gem 'streaming_player', path: '../../yggdra/plugins/streaming_player'

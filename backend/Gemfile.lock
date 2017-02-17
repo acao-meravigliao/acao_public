@@ -64,6 +64,21 @@ PATH
     json_exceptions (0.0.1)
 
 PATH
+  remote: ../../yggdra/plugins/ml_hel
+  specs:
+    ml_hel (1.0.0)
+      active_rest (>= 6.6.0)
+      yggdra_plugins
+
+PATH
+  remote: ../../yggdra/plugins/ml_models
+  specs:
+    ml_models (1.0.0)
+      active_rest (>= 6.6.0)
+      dkim
+      yggdra_plugins
+
+PATH
   remote: ../../yggdra/plugins/rails_amqp
   specs:
     rails_amqp (1.0.0)
@@ -81,6 +96,18 @@ PATH
   specs:
     shop_models (1.0.0)
       active_rest (>= 6.6.0)
+      yggdra_plugins
+
+PATH
+  remote: ../../yggdra/plugins/streaming_hel
+  specs:
+    streaming_hel (1.0.0)
+      yggdra_plugins
+
+PATH
+  remote: ../../yggdra/plugins/streaming_models
+  specs:
+    streaming_models (1.0.0)
       yggdra_plugins
 
 PATH
@@ -161,6 +188,7 @@ GEM
     concurrent-ruby (1.0.4)
     debug_inspector (0.0.2)
     deep_open_struct (1.0.3)
+    dkim (1.0.0)
     erubis (2.7.0)
     exception_notification (4.2.1)
       actionmailer (>= 4.0, < 6)
@@ -195,9 +223,12 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
-    pry-rails (0.3.4)
+    pry-rails (0.3.5)
       pry (>= 0.9.10)
     puma (3.7.0)
+    puma-plugin-systemd (0.3.0)
+      json
+      puma (~> 3.7.0)
     rack (2.0.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -276,16 +307,21 @@ DEPENDENCIES
   i18n_hel!
   i18n_models!
   json_exceptions!
+  ml_hel!
+  ml_models!
   pg
   pry
   pry-rails
   puma
+  puma-plugin-systemd
   rails (~> 5.0.0)
   rails_amqp!
   scruffy
   sdoc
   shop_hel!
   shop_models!
+  streaming_hel!
+  streaming_models!
   vihai-password (>= 1.2.0)!
   vihai-password-rails!
   yggdra_plugins!

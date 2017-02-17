@@ -5,6 +5,7 @@ gem 'rails', '~> 5.0.0'
 gem 'pg'
 
 gem 'puma'
+gem 'puma-plugin-systemd'
 
 gem 'pry'
 gem 'pry-rails'
@@ -50,3 +51,9 @@ gem 'acao_hel', :path => '../../acao_plugins/acao_hel'
 
 gem 'i18n_models', path: '../../yggdra/plugins/i18n_models'
 gem 'i18n_hel', path: '../../yggdra/plugins/i18n_hel'
+
+gem 'ml_models', path: '../../yggdra/plugins/ml_models'
+gem 'ml_hel', path: '../../yggdra/plugins/ml_hel'
+
+gem 'streaming_models', path: '../../yggdra/plugins/streaming_models'
+gem 'streaming_hel', path: '../../yggdra/plugins/streaming_hel'

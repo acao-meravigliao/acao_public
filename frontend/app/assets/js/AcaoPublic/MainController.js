@@ -30,7 +30,7 @@ Ext.define('AcaoPublic.MainController', {
       'viewport > toolbar[region=west] button': { click: me.onMenuButton },
     });
 
-    me.openUri('ygg/acao/flights/');
+    me.openUri('model/ygg/acao/flights/');
   },
 
   handleUriChange: function(uri) {
@@ -78,8 +78,8 @@ Ext.define('AcaoPublic.MainController', {
 
     switch(button.name) {
 //    case 'anagraphic': me.openUri('ygg/vpn/devices/'); break;
-    case 'flights': me.openUri('ygg/acao/flights/'); break;
-    case 'planes': me.openUri('ygg/acao/planes/'); break;
+    case 'flights': me.openUri('model/ygg/acao/flights/'); break;
+    case 'planes': me.openUri('model/ygg/acao/planes/'); break;
     case 'logout': me.onLogout(); break;
     }
   },
