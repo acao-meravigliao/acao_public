@@ -36,38 +36,21 @@ module Acao
 
     config.amqp_ws_gw.authentication_needed = false
 
-    config.amqp_ws_gw.routes = {
-      'ygg.glideradar.processed_traffic': {
-        exchange_type: :topic,
-        exchange_options: {
-          durable: true,
-          auto_delete: false,
-        },
-        routing_key: '#',
-        queue_name: 'ygg.glideradar.processed_traffic.backend.' + Socket.gethostname,
-        queue_options: {
-          durable: false,
-          auto_delete: true,
-          arguments: {
-            'x-message-ttl': 30000,
-          },
-        },
+    config.amqp_ws_gw.shared_queue = {
+      name: 'ygg.acao_public.' + Socket.gethostname,
+      durable: false,
+      auto_delete: true,
+      arguments: {
+        'x-message-ttl': 30000,
       },
+    }
+
+    config.amqp_ws_gw.routes = {
       'ygg.meteo.updates': {
-        exchange_type: :topic,
-        exchange_options: {
-          durable: true,
-          auto_delete: false,
-        },
-        routing_key: '#',
-        queue_name: 'ygg.meteo.updates.backend.' + Socket.gethostname,
-        queue_options: {
-          durable: false,
-          auto_delete: true,
-          arguments: {
-            'x-message-ttl': 30000,
-          },
-        },
+        type: :topic,
+        durable: true,
+        auto_delete: false,
+        anonymous_access: true,
       },
     }
 

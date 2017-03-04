@@ -26,7 +26,8 @@ Rails.application.configure do
     'ext/resources/ext-theme-redtune/ext-theme-redtune-all.css',
     'video.js',
     'video.css',
-    'radar.js',
+    'radar.css',
+    'radar-all.js',
     'meteo.js',
   ]
 end

@@ -1,5 +1,7 @@
 bind 'tcp://[::]:3000'
 
+directory '/opt/acao_public/backend/current'
+
 threads 8,32
 workers 3
 preload_app!
@@ -10,7 +12,9 @@ pidfile 'log/puma-production.pid'
 plugin :systemd
 
 on_worker_boot do
-  ::Ygg::AmqpWsGw.start
+  RailsActorModel::Logger.new
+
+  Ygg::AmqpWsGw.start
 
   ActiveSupport.on_load(:active_record) do
     ActiveRecord::Base.establish_connection

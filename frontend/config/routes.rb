@@ -17,10 +17,9 @@ Rails.application.routes.draw do
   end
 
   scope module: 'ygg/streaming' do
-    get 'cam/:name' => 'player#live'
-    get 'cam/:name/live.m3u8' => 'player#live_m3u8'
+    get 'cam/:name' => redirect('/cam/%{name}/live', status: 302)
     get 'cam/:name/live' => 'player#live'
-    get 'cam/:name/livelapse' => 'player#livelapse'
-    get 'cam/:name/player' => 'player#player'
+#    get 'cam/:name/livelapse' => 'player#livelapse'
+#    get 'cam/:name/player' => 'player#player'
   end
 end

@@ -25,4 +25,14 @@ Rails.application.configure do
   config.assets.raise_production_errors = true
 
   config.core.amqp_may_fail = true
+
+  config.amqp_ws_gw.routes.merge!({
+    'ygg.glideradar.processed_traffic.linobis': {
+      type: :topic,
+      durable: true,
+      auto_delete: false,
+      anonymous_access: true,
+    }
+  })
+
 end
