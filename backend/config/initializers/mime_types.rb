@@ -4,3 +4,5 @@
 # Mime::Type.register "text/richtext", :rtf
 Mime::Type.register "application/x-igc", :igc
 Mime::Type.register 'application/x-mpegURL', :m3u8
+Mime::Type.register "application/vnd.api+json", :jsonapi
+Mime::Type.register "application/problem+json", :json_problem

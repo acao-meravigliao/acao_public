@@ -18,13 +18,6 @@ development:
   username:
   password:
 
-assets:
-  adapter: postgresql
-  encoding: unicode
-  database: acao
-  username:
-  password:
-
 test:
   adapter: sqlite3
   database: db/test.sqlite3

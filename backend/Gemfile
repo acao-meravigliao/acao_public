@@ -1,23 +1,24 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.0.0'
+gem 'rails', '~> 5.2.0'
 
 gem 'pg'
 
 gem 'puma'
-gem 'puma-plugin-systemd'
 
 gem 'pry'
 gem 'pry-rails'
 gem 'awesome_print'
 gem 'geocoder'
-gem 'exception_notification', '>= 4.2.0'
 
 gem 'scruffy'
 
+gem 'airbrake'
+
 source 'https://gems.sevio.it/' do
+  gem 'puma-plugin-systemd'
   gem 'vihai-password', '>= 1.2.0'
-  gem 'active_rest', '~> 7.0.0'
+  gem 'active_rest', '~> 9.0.0'
 end
 
 group :test, :development do
@@ -43,8 +44,8 @@ gem 'amqp_ws_gw', path: '../../yggdra/plugins/amqp_ws_gw'
 gem 'core_models', :path => '../../yggdra/plugins/core_models'
 gem 'core_hel', :path => '../../yggdra/plugins/core_hel'
 
-gem 'shop_models', :path => '../../yggdra/plugins/shop_models'
-gem 'shop_hel', :path => '../../yggdra/plugins/shop_hel'
+#gem 'shop_models', :path => '../../yggdra/plugins/shop_models'
+#gem 'shop_hel', :path => '../../yggdra/plugins/shop_hel'
 
 gem 'acao_models', :path => '../../acao_plugins/acao_models'
 gem 'acao_hel', :path => '../../acao_plugins/acao_hel'

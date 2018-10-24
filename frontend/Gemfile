@@ -1,19 +1,22 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 5.0.0'
+gem 'rails', '~> 5.2.0'
 
 gem 'puma'
-gem 'puma-plugin-systemd'
+
+source 'https://gems.sevio.it/' do
+  gem 'puma-plugin-systemd'
+end
 
 gem 'pry'
 gem 'pry-rails'
 gem 'awesome_print'
 
-gem 'exception_notification', '>= 4.0.1'
-
 gem 'sprockets-rails', '~> 3.2.0'
 
 gem 'jquery-rails'
+
+gem 'airbrake'
 
 group :test, :development do
   gem 'better_errors'

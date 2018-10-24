@@ -1,7 +1,7 @@
 require_relative 'boot'
 
+require 'rails'
 require 'action_controller/railtie'
-require 'action_mailer/railtie'
 require 'sprockets/railtie'
 
 # Require the gems listed in Gemfile, including any gems
@@ -28,11 +28,21 @@ module AcaoPublicFrontend
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'js')
     config.assets.paths << File.join(Rails.root, 'app', 'assets', 'css')
 
+    config.app_version = /releases\/([0-9]+)/.match(File.expand_path(__dir__)) ? "rel-#{$1}" : (
+                           `git describe --tags --dirty --long` || `git rev-parse HEAD`).chop
+
     config.extgui.page_title = 'ACAO Area Servizi'
     config.extgui.application = 'AcaoPublic.Application'
     config.extgui.routes.merge!({ 'AcaoPublic' => 'AcaoPublic' })
     config.extgui.default_theme = :neptune
     config.extgui.main_css = 'acao_public.css'
     config.extgui.favicon = 'acao_public/favicon.png'
+    config.extgui.extra_config = {
+      airbrake: {
+        host: 'https://errbit.sevio.it',
+        project_id: 1,
+        project_key: 'b2fb648d65f08fcb01cceb6eb2dc3f79',
+      },
+    }
   end
 end
