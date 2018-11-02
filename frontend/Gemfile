@@ -4,10 +4,6 @@ gem 'rails', '~> 5.2.0'
 
 gem 'puma'
 
-source 'https://gems.sevio.it/' do
-  gem 'puma-plugin-systemd'
-end
-
 gem 'pry'
 gem 'pry-rails'
 gem 'awesome_print'
@@ -17,6 +13,11 @@ gem 'sprockets-rails', '~> 3.2.0'
 gem 'jquery-rails'
 
 gem 'airbrake'
+
+source 'https://gems.sevio.it/' do
+  gem 'puma-plugin-systemd'
+  gem 'json_exceptions'
+end
 
 group :test, :development do
   gem 'better_errors'
@@ -29,7 +30,6 @@ group :assets do
   gem 'therubyracer'
 end
 
-gem 'json_exceptions', path: '../../yggdra/plugins/json_exceptions'
 gem 'autosvg', path: '../../yggdra/plugins/autosvg'
 
 gem 'extjs', path: '../../yggdra/plugins/extjs'
@@ -39,6 +39,6 @@ gem 'core_extgui', path: '../../yggdra/plugins/core_extgui'
 gem 'shop_extgui', path: '../../yggdra/plugins/shop_extgui'
 gem 'i18n_extgui', path: '../../yggdra/plugins/i18n_extgui'
 gem 'ml_extgui', path: '../../yggdra/plugins/ml_extgui'
-gem 'acao_extgui', path: '../../acao_plugins/acao_extgui'
+gem 'acao_extgui', path: '../../acao-plugins/acao_extgui'
 gem 'streaming_extgui', path: '../../yggdra/plugins/streaming_extgui'
 gem 'streaming_player', path: '../../yggdra/plugins/streaming_player'

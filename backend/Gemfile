@@ -10,15 +10,20 @@ gem 'pry'
 gem 'pry-rails'
 gem 'awesome_print'
 gem 'geocoder'
-
 gem 'scruffy'
+gem 'prawn'
 
 gem 'airbrake'
 
 source 'https://gems.sevio.it/' do
   gem 'puma-plugin-systemd'
   gem 'vihai-password', '>= 1.2.0'
-  gem 'active_rest', '~> 9.0.0'
+  gem 'active_rest', '~> 10.0'
+  gem 'rails_active_rest', '~> 1.0'
+  gem 'vihai-password-rails'
+  gem 'json_exceptions'
+  gem 'rails_actor_model'
+  gem 'rails_amqp'
 end
 
 group :test, :development do
@@ -31,14 +36,8 @@ group :doc do
   gem 'sdoc', require: false
 end
 
-gem 'vihai-password-rails', :path => '../../yggdra/plugins/vihai_password_rails'
-
-gem 'json_exceptions', :path => '../../yggdra/plugins/json_exceptions'
-
 gem 'hel', :path => '../../yggdra/plugins/hel'
 
-gem 'rails_actor_model', path: '../../yggdra/plugins/rails_actor_model'
-gem 'rails_amqp', path: '../../yggdra/plugins/rails_amqp'
 gem 'amqp_ws_gw', path: '../../yggdra/plugins/amqp_ws_gw'
 
 gem 'core_models', :path => '../../yggdra/plugins/core_models'
@@ -47,8 +46,8 @@ gem 'core_hel', :path => '../../yggdra/plugins/core_hel'
 #gem 'shop_models', :path => '../../yggdra/plugins/shop_models'
 #gem 'shop_hel', :path => '../../yggdra/plugins/shop_hel'
 
-gem 'acao_models', :path => '../../acao_plugins/acao_models'
-gem 'acao_hel', :path => '../../acao_plugins/acao_hel'
+gem 'acao_models', :path => '../../acao-plugins/acao_models'
+gem 'acao_hel', :path => '../../acao-plugins/acao_hel'
 
 gem 'i18n_models', path: '../../yggdra/plugins/i18n_models'
 gem 'i18n_hel', path: '../../yggdra/plugins/i18n_hel'
